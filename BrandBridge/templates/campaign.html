@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<article class="media content-section">
+    <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/'+campaign.owner.image_file) }}">
+    <div class="ml-3">
+        <h4><a class="mr-2" href="{{ url_for('sponsor_campaigns', company_name=campaign.owner.company_name) }}">{{ campaign.owner.company_name }}</a></h4>
+        <small class="text-muted">{{ campaign.date_posted.strftime('%Y-%m-%d') }}</small>
+        {% if current_user.is_sponsor() and campaign.owner == current_user %}
+            <div>
+                <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('update_campaign', campaign_id=campaign.id) }}">Update</a>
+                <button type="button" class="btn btn-danger btn-sm m-1" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
+            </div>
+        {% elif current_user.is_influencer() %}
+            <!-- Button for Influencers -->
+            <form action="{{ url_for('request_ad', campaign_id=campaign.id) }}" method="POST">
+                <input type="hidden" name="campaign_id" value="{{ campaign.id }}">
+                <button type="submit" class="btn btn-primary btn-sm mt-1 mb-1">Request Ad</button>
+            </form>
+        {% endif %}
+    </div>
+    <div class="media-body mt-3">
+        <h2 class="article-title">{{ campaign.title }}</h2>
+        <hr>
+        <p class="article-content"><b>Description:</b></p>
+        <p class="article-content">{{ campaign.desc }}</p>
+        <hr>
+        <p class="article-content"><b>Details:</b></p>
+        <p class="article-content">1. From {{ campaign.start_date.strftime('%Y-%m-%d') }} to {{ campaign.end_date.strftime('%Y-%m-%d') }}</p>
+        <p class="article-content">2. With the Budget of Rs. {{ campaign.budget }}</p>
+        <p class="article-content">3. Goals: {{ campaign.goals }}</p>
+    </div>
+</article>
+
+{% if current_user.is_sponsor() %}
+    <!-- Display Ad Requests for Sponsors -->
+    <div class="content-section mt-4">
+        <h3>Ad Requests</h3>
+        {% if ad_requests %}
+            <ul class="list-group">
+                {% for ad_request in ad_requests %}
+                    <li class="list-group-item">
+                        <strong>Influencer:</strong> {{ ad_request.influencer.name }} <br>
+                        <strong>Status:</strong> {{ ad_request.status }} <br>
+                        <strong>Goals Proposed:</strong> {{ ad_request.messages }} <br>
+                        <strong>Payment Proposed:</strong> {{ ad_request.payment_amount }} <br>
+                        <br>
+                        {% if ad_request.status == 'Pending' %}
+                            <form action="{{ url_for('accept_ad_request', ad_request_id=ad_request.id) }}" method="POST" class="d-inline">
+                                <input type="submit" class="btn btn-success btn-sm" value="Accept">
+                            </form>
+                            <form action="{{ url_for('reject_ad_request', ad_request_id=ad_request.id) }}" method="POST" class="d-inline">
+                                <input type="submit" class="btn btn-danger btn-sm" value="Reject">
+                            </form>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No ad requests for this campaign.</p>
+        {% endif %}
+    </div>
+{% endif %}
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Delete Campaign?</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <form action="{{ url_for('delete_campaign', campaign_id=campaign.id) }}" method="POST">
+                    {% if form %}
+                        {{ form.hidden_tag() }}
+                    {% endif %}
+                    <input class="btn btn-danger" type="submit" value="Delete">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

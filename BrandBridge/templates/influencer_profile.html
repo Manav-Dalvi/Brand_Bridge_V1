@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="content-section">
+    <div class="media">
+        <img class="rounded-circle account-img" src="{{ url_for('static', filename='profile_pics/' + influencer.image_file) }}">
+        <div class="media-body">
+            <h2 class="account-heading">{{ influencer.name }}</h2>
+            <hr>
+            <p class="text-secondary"><b>Niche: </b>{{ influencer.niche }}</p>
+            <p class="text-secondary"><b>Reach: </b>{{ influencer.reach }}</p>
+            <p class="text-secondary"><b>Email: </b>{{ influencer.email }}</p>
+        </div>
+    </div>
+    <div class="content-section mt-4">
+        <h3>Completed Campaigns</h3>
+        {% if ad_requests %}
+            <ul class="list-group">
+                {% for ad_request in ad_requests %}
+                    <li class="list-group-item">
+                        <strong>Campaign:</strong> <a href="{{ url_for('campaign', campaign_id=ad_request.campaign.id) }}">{{ ad_request.campaign.title }}</a> <br>
+                        <strong>Description:</strong> {{ ad_request.campaign.desc }} <br>
+                        <strong>Goals:</strong> {{ ad_request.goals }} <br>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No accepted ad requests.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

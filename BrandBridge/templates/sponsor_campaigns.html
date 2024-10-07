@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1 class="mb-3"> Campaigns by {{sponsor.company_name}} : {{campaigns.total}}</h1>
+    {% for campaign in campaigns.items %}
+        <article class="media content-section">
+            <div class="d-flex align-items-center">
+                <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/'+campaign.owner.image_file)}}">
+                <div class="ml-3">
+                    <h4><a class="mr-2" href="{{ url_for('sponsor_campaigns', company_name=campaign.owner.company_name)}}">{{ campaign.owner.company_name }}</a></h4>
+                    <small class="text-muted">{{ campaign.date_posted.strftime('%Y-%m-%d') }}</small>
+                </div>
+            </div>
+            <div class="media-body mt-3">
+                <h3><a class="article-title" href="{{url_for('campaign', campaign_id=campaign.id)}}">{{ campaign.title }}</a></h3>
+                <hr>
+                <p class="article-content"><B>Description:</B></p>
+                <p class="article-content">{{ campaign.desc }}</p>
+
+
+            </div>
+        </article>
+    {% endfor %}
+    {% for page_num in campaigns.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=3) %}
+        {% if page_num %}
+            {% if campaigns.page == page_num %}
+                <a class="btn btn-info mb-4" href="{{ url_for('sponsor_campaigns', company_name=sponsor.company_name, page=page_num) }}">{{ page_num }}</a>
+            {% else %}
+                <a class="btn btn-outline-info mb-4" href="{{ url_for('sponsor_campaigns', company_name=sponsor.company_name, page=page_num) }}">{{ page_num }}</a>
+            {% endif %}
+        {% else %}
+        
+        {% endif %}
+    {% endfor %}
+{% endblock content %}

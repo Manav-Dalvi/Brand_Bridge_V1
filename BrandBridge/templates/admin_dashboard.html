@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Admin Dashboard</h1>
+
+    <div class="container mt-4">
+        <h2>Influencers</h2>
+        {% for influencer in influencers %}
+            <article class="media content-section">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + influencer.image_file) }}">
+                        <div class="ml-3">
+                            <h4><a class="mr-2" href="{{ url_for('influencer_profile', influencer_id=influencer.id) }}">{{ influencer.name }}</a></h4>
+                        </div>
+                    </div>
+                    <form action="{{ url_for('flag_item') }}" method="post" class="ml-3">
+                        <input type="hidden" name="item_type" value="influencer">
+                        <input type="hidden" name="item_id" value="{{ influencer.id }}">
+                        <button type="submit" class="btn btn-warning btn-sm">Flag</button>
+                    </form>
+                </div>
+            </article>
+        {% else %}
+            <p>No influencers found.</p>
+        {% endfor %}
+    </div>
+
+    <div class="container mt-4">
+        <h2>Sponsors</h2>
+        {% for sponsor in sponsors %}
+            <article class="media content-section">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + sponsor.image_file) }}">
+                        <div class="ml-3">
+                            <h4><a class="mr-2" href="{{ url_for('sponsor_campaigns', company_name=sponsor.company_name) }}">{{ sponsor.company_name }}</a></h4>
+                        </div>
+                    </div>
+                    <form action="{{ url_for('flag_item') }}" method="post" class="ml-3">
+                        <input type="hidden" name="item_type" value="sponsor">
+                        <input type="hidden" name="item_id" value="{{ sponsor.id }}">
+                        <button type="submit" class="btn btn-warning btn-sm">Flag</button>
+                    </form>
+                </div>
+            </article>
+        {% else %}
+            <p>No sponsors found.</p>
+        {% endfor %}
+    </div>
+
+    <div class="container mt-4">
+        <h2>Campaigns</h2>
+        {% for campaign in campaigns %}
+            <article class="media content-section">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="d-flex align-items-center">
+                        <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + campaign.owner.image_file) }}">
+                        <div class="ml-3">
+                            <h4><a class="mr-2" href="{{ url_for('sponsor_campaigns', company_name=campaign.owner.company_name) }}">{{ campaign.owner.company_name }}</a></h4>
+                            <small class="text-muted">{{ campaign.date_posted.strftime('%Y-%m-%d') }}</small>
+                        </div>
+                    </div>
+                    <form action="{{ url_for('flag_item') }}" method="post" class="ml-3">
+                        <input type="hidden" name="item_type" value="campaign">
+                        <input type="hidden" name="item_id" value="{{ campaign.id }}">
+                        <button type="submit" class="btn btn-warning btn-sm">Flag</button>
+                    </form>
+                </div>
+                <div class="media-body mt-3">
+                    <h3><a class="article-title" href="{{ url_for('campaign', campaign_id=campaign.id) }}">{{ campaign.title }}</a></h3>
+                    <hr>
+                    <p class="article-content"><strong>Description:</strong></p>
+                    <p class="article-content">{{ campaign.desc }}</p>
+                </div>
+            </article>
+        {% else %}
+            <p>No campaigns found.</p>
+        {% endfor %}
+    </div>
+{% endblock content %}

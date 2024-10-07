@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <h1>Search Results for "{{ query }}"</h1>
+    {% if results %}
+        <ul class="list-group">
+            {% if type == 'Sponsors' %}
+                {% for sponsor in results %}
+                    <li class="list-group-item">
+                        <a href="{{ url_for('sponsor_campaigns', company_name=sponsor.company_name) }}">
+                            {{ sponsor.company_name }}
+                        </a>
+                    </li>
+                {% endfor %}
+            {% elif type == 'Influencers' %}
+                {% for influencer in results %}
+                    <li class="list-group-item">
+                        <a href="{{ url_for('influencer_profile', influencer_id=influencer.id) }}">
+                            {{ influencer.name }}
+                        </a>
+                    </li>
+                {% endfor %}
+            {% elif type == 'Campaigns' %}
+                {% for campaign in results %}
+                    <li class="list-group-item">
+                        <a href="{{ url_for('campaign', campaign_id=campaign.id) }}">
+                            {{ campaign.title }}
+                        </a>
+                    </li>
+                {% endfor %}
+            {% endif %}
+        </ul>
+    {% else %}
+        <p>No {{ type.lower() }} found matching "{{ query }}".</p>
+    {% endif %}
+{% endblock %}
